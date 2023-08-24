@@ -16,7 +16,7 @@ def index():
         logging.info(summary.error_message)
         logging.info("We are testing logging module")
 
-        return "hello Worlds"
+        return "hello World"
 
 
 if __name__ == "__main__":
