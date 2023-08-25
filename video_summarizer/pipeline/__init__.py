@@ -1,5 +1,7 @@
 from video_summarizer.components.data_ingestion import DataIngestion
 from video_summarizer.components.data_validation import DataValidation
+from video_summarizer.components.data_preprocessing import DataProcessingConfig
+from video_summarizer.components.data_preprocessing import DataProcessing
 import os
 import sys
 from dataclasses import dataclass
@@ -9,6 +11,8 @@ from dataclasses import dataclass
 class TrainingPipelineConfig:
     artifacts_folder = "artifacts"
     data_ingestion_artifacts = os.path.join(artifacts_folder, "data_ingestion")
+    data_processing_artifacts = os.path.join(
+        artifacts_folder, "data_processing")
 
 
 def create_directories(config=TrainingPipelineConfig):
@@ -19,6 +23,10 @@ def create_directories(config=TrainingPipelineConfig):
     # Check and create the data ingestion artifacts folder
     if not os.path.exists(config.data_ingestion_artifacts):
         os.makedirs(config.data_ingestion_artifacts)
+
+     # Check and create the data processing artifacts folder
+    if not os.path.exists(config.data_processing_artifacts):
+        os.makedirs(config.data_processing_artifacts)
 
 
 def run_training_pipeline(config=TrainingPipelineConfig):
@@ -31,3 +39,10 @@ def run_training_pipeline(config=TrainingPipelineConfig):
     # create an instance of the `DataValidation` class and assign variable as `validator`.
     validator = DataValidation(dataset_folder=config.data_ingestion_artifacts)
     validator.check_dataset()
+
+    # create an instance of the config dataclass for data processing component
+    data_processing_config = DataProcessingConfig(max_input_length=128, max_target_length=64,
+                                                  dataset_folder=config.data_ingestion_artifacts, artifacts_folder=config.data_processing_artifacts)
+    # create an instance of the 'DataProcessing' class and assigns variable as 'processor'.
+    processor = DataProcessing(data_processing_config)
+    processor.process_data()
